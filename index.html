@@ -11,7 +11,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         /* Aplicamos la fuente Inter a todo el cuerpo */
-/* ... existing code ... -->
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Estilo para las tarjetas de marca */
+        .brand-card {
+            background-color: #1f2937; /* bg-gray-800 */
+            border-radius: 1rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            border: 1px solid #374151; /* border-gray-700 */
+            transition: all 0.3s ease-in-out;
+        }
         .brand-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
@@ -155,13 +166,6 @@
         <section class="mb-16">
             <h2 class="text-xl sm:text-2xl font-bold text-white border-b-2 border-blue-500 pb-2 mb-8">Tecnología: Wifi-6</h2>
             
-            <!-- Contenedor de marcas para Wifi-6 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- ZTE -->
-                <div class="brand-card">
-            </h2>
-            
             <!-- Grid para los fabricantes de Wifi-6 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
@@ -289,13 +293,6 @@
         <section>
             <h2 class="text-xl sm:text-2xl font-bold text-white border-b-2 border-blue-500 pb-2 mb-8">Tecnología: Wifi-5</h2>
             
-            <!-- Contenedor de marcas para Wifi-5 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- ZTE -->
-                <div class="brand-card">
-            </h2>
-
             <!-- Grid para los fabricantes de Wifi-5 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
@@ -552,10 +549,17 @@
     <!-- INICIO: Lógica del Asistente Gemini -->
     <script type="module">
         // --- Constantes de la API ---
-        const apiKey = "AIzaSyAouVfN_En34vqWIUfigq4lx-Fn-ncWHpk"; // La API key se inyectará en el entorno de ejecución
+        const apiKey = ""; // Dejar vacío, se proveerá en runtime
+        const systemPrompt = `
+Eres un asistente experto en redes y técnico de telecomunicaciones, especializado en equipos ZTE, Huawei y Nokia.
+Tu tarea es proporcionar guías de configuración claras, concisas y paso a paso.
+El usuario te hará una consulta sobre cómo configurar o solucionar problemas de una combinación de ONT y Access Point.
+Responde ÚNICAMENTE con la guía. No saludes, no uses introducciones ni despedidas. Ve directo a los pasos.
+Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
+`;
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
-        // --- Selectores del DOM ---
+        // --- Constantes del DOM (¡AÑADIDAS!) ---
         const modal = document.getElementById('gemini-modal');
         const openModalBtn = document.getElementById('open-gemini-modal');
         const closeModalBtn = document.getElementById('close-gemini-modal');
@@ -564,49 +568,118 @@
         const responseDiv = document.getElementById('gemini-response');
         const loader = document.getElementById('gemini-loader');
 
+        // --- Contraseña ---
+        const ADMIN_PASSWORD = "config2024"; // Puedes cambiar esta contraseña
+
         // --- Event Listeners ---
-        openModalBtn.addEventListener('click', showModal);
+        openModalBtn.addEventListener('click', checkPasswordAndShowModal); // Modificado
         closeModalBtn.addEventListener('click', hideModal);
+        
+        // **INICIO: CÓDIGO CORREGIDO**
+        // Lógica para cerrar el modal si se hace clic fuera de él
         window.addEventListener('click', (event) => {
             if (event.target == modal) {
                 hideModal();
             }
         });
+        // **FIN: CÓDIGO CORREGIDO**
+
         submitBtn.addEventListener('click', getGeminiResponse);
 
         // --- Funciones del Modal ---
-        function showModal() {
-            modal.style.display = 'block';
-        }
-        function hideModal() {
-            modal.style.display = 'none';
-        }
-
-        // --- Lógica de la API de Gemini ---
 
         /**
-         * Función principal para llamar a la API de Gemini
+         * Nueva función para verificar la contraseña antes de mostrar el modal
+         */
+        function checkPasswordAndShowModal() {
+            const enteredPassword = prompt("Por favor, introduce la contraseña para acceder al asistente:");
+            
+            // Verificar si el usuario ingresó algo y si coincide
+            if (enteredPassword === ADMIN_PASSWORD) {
+                showModal();
+            } else if (enteredPassword !== null && enteredPassword !== "") {
+                // El usuario escribió algo pero era incorrecto.
+                // No usamos alert(), así que simplemente no abrimos el modal.
+                console.warn("Contraseña incorrecta.");
+            }
+            // Si el usuario presiona "Cancelar" (enteredPassword es null), no se hace nada.
+        }
+
+        function showModal() {
+            modal.style.display = 'block';
+            // **INICIO: CÓDIGO CORREGIDO**
+            // Se eliminó el comentario malformado que estaba aquí
+            // **FIN: CÓDIGO CORREGIDO**
+        }
+
+        function hideModal() {
+            modal.style.display = 'none';
+            // Resetea el modal al cerrar
+            promptInput.value = '';
+            responseDiv.innerHTML = 'Tu guía de configuración aparecerá aquí...';
+            responseDiv.style.display = 'block';
+            loader.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Generar Guía';
+        }
+
+        // --- Funciones de la API de Gemini ---
+
+        /**
+         * Función para reintentar la llamada fetch con backoff exponencial.
+         * @param {number} maxRetries - Número máximo de reintentos.
+         * @returns {Promise<Response>}
+         */
+        async function fetchWithBackoff(url, options, maxRetries = 3) {
+            let attempt = 0;
+            let delay = 1000; // 1 segundo inicial
+
+            while (attempt < maxRetries) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) {
+                        return response;
+                    }
+                    // Si la respuesta no es 'ok' pero no es un error de red (ej. 404, 500)
+                    // no reintentamos, simplemente lanzamos el error para que sea manejado.
+                    if (response.status >= 400 && response.status < 500) {
+                         console.error(`Error ${response.status} del cliente. No se reintentará.`);
+                         throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    // Si es un error de servidor (5xx) o un código de reintento (429), reintentamos.
+                    console.warn(`Intento ${attempt + 1} fallido. Reintentando en ${delay}ms...`);
+
+                } catch (error) {
+                    // Este catch maneja errores de red (ej. 'Failed to fetch')
+                    console.warn(`Intento ${attempt + 1} fallido (error de red). Reintentando en ${delay}ms...`);
+                }
+
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2; // Duplica el retraso para el siguiente intento
+                attempt++;
+            }
+
+            // Si todos los reintentos fallan, lanza el error final.
+            throw new Error(`No se pudo obtener la respuesta de la API después de ${maxRetries} intentos.`);
+        }
+
+
+        /**
+         * Llama a la API de Gemini y muestra la respuesta.
          */
         async function getGeminiResponse() {
-            const userQuery = promptInput.value.trim();
+            const userQuery = promptInput.value;
             if (!userQuery) {
-                responseDiv.textContent = 'Por favor, introduce una consulta.';
+                // No usamos alert()
+                responseDiv.innerHTML = 'Por favor, introduce una consulta.';
                 return;
             }
 
-            // Mostrar loader y ocultar botón
+            // Mostrar loader y ocultar/deshabilitar elementos
             loader.style.display = 'block';
-            submitBtn.style.display = 'none';
-            responseDiv.textContent = ''; // Limpiar respuesta anterior
-
-            // System prompt para guiar al modelo
-            const systemPrompt = `
-                Eres un técnico experto en redes de la compañía "MEGA".
-                Tu tarea es ayudar a los usuarios a configurar y solucionar problemas de redes Mesh.
-                El usuario está viendo una infografía de compatibilidad de equipos (ONTs y Access Points) de las marcas ZTE, Huawei y Nokia.
-                Proporciona guías claras, concisas, y paso a paso.
-                Responde siempre en español.
-            `;
+            responseDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Generando...';
 
             const payload = {
                 contents: [{
@@ -615,66 +688,45 @@
                 systemInstruction: {
                     parts: [{ text: systemPrompt }]
                 },
+                generationConfig: {
+                    // Configuración opcional
+                    temperature: 0.5,
+                    topK: 40,
+                }
             };
 
             try {
                 const response = await fetchWithBackoff(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-
                 const result = await response.json();
                 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
                     const text = result.candidates[0].content.parts[0].text;
-                    responseDiv.textContent = text;
+                    // Limpiamos el HTML para evitar inyecciones, aunque el markdown simple es seguro.
+                    // Para este caso, como esperamos markdown simple, podemos reemplazar saltos de línea con <br>
+                    // o usar `white-space: pre-wrap;` (que ya está en el CSS).
+                    responseDiv.textContent = text; // .textContent es más seguro que .innerHTML
                 } else {
-                    responseDiv.textContent = 'No se pudo obtener una respuesta del asistente. Intenta de nuevo.';
-                    console.error('Respuesta inesperada de la API:', result);
+                    throw new Error("Respuesta inesperada de la API.");
                 }
 
             } catch (error) {
-                console.error('Error al llamar a la API de Gemini:', error);
-                responseDiv.textContent = `Error: No se pudo conectar con el asistente. ${error.message}`;
+                console.error("Error al llamar a la API de Gemini:", error);
+                responseDiv.textContent = `Error: No se pudo obtener la respuesta. Por favor, inténtalo de nuevo.\nDetalles: ${error.message}`;
             } finally {
-                // Ocultar loader y mostrar botón
+                // Ocultar loader y restaurar elementos
                 loader.style.display = 'none';
-                submitBtn.style.display = 'block';
+                responseDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Generar Guía';
             }
         }
-
-        /**
-         * Wrapper para fetch con reintentos y backoff exponencial
-         */
-        async function fetchWithBackoff(url, options, retries = 3, delay = 1000) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok && response.status === 429) { // Error de "Too Many Requests"
-                        throw new Error('429');
-                    }
-                    return response; // Éxito
-                } catch (error) {
-                    if (error.message === '429' && i < retries - 1) {
-                        // console.warn(`Intento ${i + 1} fallido (429). Reintentando en ${delay}ms...`);
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2; // Backoff exponencial
-                    } else {
-                        throw error; // Error final
-                    }
-                }
-            }
-            throw new Error('Se superaron los reintentos máximos.');
-        }
-
     </script>
     <!-- FIN: Lógica del Asistente Gemini -->
 
