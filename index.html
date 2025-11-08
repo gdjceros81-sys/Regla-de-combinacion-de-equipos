@@ -113,6 +113,16 @@
                 opacity: 1;
             }
         }
+        
+        /* Animación para error de contraseña */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
 
         .modal-close {
             color: #aaa;
@@ -620,6 +630,29 @@
         </div>
     </div>
     <!-- FIN: Modal del Asistente Gemini -->
+    
+    <!-- INICIO: Modal de Contraseña -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-semibold text-white mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                Acceso Requerido
+            </h3>
+            <p class="text-gray-400 mb-4">
+                Por favor, introduce la contraseña para acceder al asistente.
+            </p>
+            
+            <input type="password" id="password-input" class="w-full bg-gray-700 text-gray-200 p-2 rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500" placeholder="Contraseña...">
+            <p id="password-error" class="text-red-400 text-sm mt-2" style="display: none;">Contraseña incorrecta.</p>
+            
+            <button id="password-submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg mt-4 transition duration-200">
+                Acceder
+            </button>
+        </div>
+    </div>
+    <!-- FIN: Modal de Contraseña -->
 
 
     <!-- INICIO: Lógica del Asistente Gemini -->
@@ -628,21 +661,28 @@
         const apiKey = "AIzaSyAouVfN_En34vqWIUfigq4lx-Fn-ncWHpk"; // Dejar vacío, se proveerá en runtime
         const systemPrompt = `
 Eres un asistente experto en redes y técnico de telecomunicaciones, especializado en equipos ZTE, Huawei y Nokia.
-Tu tarea es proporcionar guías de configuración claras, concisas y paso a paso.
-El usuario te hará una consulta sobre cómo configurar o solucionar problemas de una combinación de ONT y Access Point.
+Tu tarea principal es **validar la compatibilidad para redes EasyMesh** entre diferentes modelos de ONT y Access Point.
+El usuario te hará una consulta sobre una combinación específica.
+Basadote en los modelos y marcas proporcionados, tu primera prioridad es:
+1.  **Confirmar si son compatibles** para EasyMesh.
+2.  Si son compatibles, proporciona una guía de configuración **enfocada en la activación de EasyMesh**.
+3.  Si NO son compatibles para EasyMesh, explícalo claramente y ofrece una alternativa de configuración (por ejemplo, AP en modo bridge o router).
+4.  Si la consulta es sobre problemas, enfócate en problemas de *sincronización Mesh*.
+
 La consulta PUEDE incluir la marca de cada equipo, por ejemplo: "ONT 'ModeloX' (marca ZTE) y AP 'ModeloY' (marca Huawei)".
-PRESTA MUCHA ATENCIÓN a las marcas, ya que las configuraciones inter-marca (cross-brand) son diferentes a las de una sola marca.
-Responde ÚNICAMENTE con la guía. No saludes, no uses introducciones ni despedidas. Ve directo a los pasos.
-Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
+PRESTA MUCHA ATENCIÓN a las marcas, ya que las configuraciones inter-marca (cross-brand) son cruciales para la compatibilidad mesh.
+Responde de forma concisa y técnica. No saludes. Ve directo al punto.
+Usa formato markdown simple.
 `;
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
         // --- Variables de Estado de Selección ---
         let selectedOnt = null; // Objeto: { model: '...', brand: '...' }
         let selectedAp = null; // Objeto: { model: '...', brand: '...' }
+        let currentContext = null; // Almacena el contexto para el modal de contraseña
 
         // --- Constantes del DOM ---
-        const modal = document.getElementById('gemini-modal');
+        const geminiModal = document.getElementById('gemini-modal');
         const openModalBtn = document.getElementById('open-gemini-modal');
         const closeModalBtn = document.getElementById('close-gemini-modal');
         const submitBtn = document.getElementById('gemini-submit');
@@ -660,6 +700,12 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
         const launchComboBtn = document.getElementById('launch-combo-assistant');
         const selectableItems = document.querySelectorAll('.selectable-item');
 
+        // --- DOM del Modal de Contraseña ---
+        const passwordModal = document.getElementById('password-modal');
+        const passwordInput = document.getElementById('password-input');
+        const passwordSubmit = document.getElementById('password-submit');
+        const passwordError = document.getElementById('password-error');
+        
         // --- Contraseña ---
         const ADMIN_PASSWORD = "config2024"; // Puedes cambiar esta contraseña
 
@@ -718,13 +764,33 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
             }
         });
 
-        closeModalBtn.addEventListener('click', hideModal);
+        // --- Listeners de Modales ---
+        closeModalBtn.addEventListener('click', hideGeminiModal);
+        
+        // Listener para cerrar el modal de Gemini si se hace clic fuera
         window.addEventListener('click', (event) => {
-            if (event.target == modal) {
-                hideModal();
+            if (event.target == geminiModal) {
+                hideGeminiModal();
+            }
+            // Listener para cerrar el modal de Contraseña si se hace clic fuera
+            if (event.target == passwordModal) {
+                hidePasswordModal();
             }
         });
+        
         submitBtn.addEventListener('click', getGeminiResponse);
+
+        // Listeners del Modal de Contraseña
+        passwordSubmit.addEventListener('click', handlePasswordSubmit);
+        passwordInput.addEventListener('keyup', (event) => {
+             // Resetear error al escribir
+            passwordError.style.display = 'none';
+            passwordInput.classList.remove('border-red-500');
+            // Permitir envío con "Enter"
+            if (event.key === 'Enter') {
+                handlePasswordSubmit();
+            }
+        });
 
         // --- Funciones de la Barra de Selección ---
         
@@ -758,20 +824,40 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
          * @param {object | null} context - Objeto con {ont, ap, ontBrand, apBrand} o null si es general
          */
         function checkPasswordAndShowModal(context) {
-            const enteredPassword = prompt("Por favor, introduce la contraseña para acceder al asistente:");
+            currentContext = context; // Almacenar el contexto para usarlo después de la validación
+            passwordInput.value = '';
+            passwordError.style.display = 'none';
+            passwordInput.classList.remove('border-red-500');
+            passwordModal.style.display = 'block';
+            passwordInput.focus();
+        }
+
+        function handlePasswordSubmit() {
+            const enteredPassword = passwordInput.value;
             
             if (enteredPassword === ADMIN_PASSWORD) {
-                showModal(context);
-            } else if (enteredPassword !== null && enteredPassword !== "") {
-                console.warn("Contraseña incorrecta.");
+                hidePasswordModal();
+                showGeminiModal(currentContext); // Usar el contexto almacenado
+            } else {
+                passwordError.style.display = 'block';
+                passwordInput.classList.add('border-red-500'); // Marcar el input en rojo
+                // Aplicar animación de "shake"
+                passwordModal.querySelector('.modal-content').classList.add('animate-shake');
+                setTimeout(() => {
+                    passwordModal.querySelector('.modal-content').classList.remove('animate-shake');
+                }, 500);
             }
+        }
+
+        function hidePasswordModal() {
+            passwordModal.style.display = 'none';
         }
 
         /**
          * Muestra el modal, configurándolo para un contexto general o específico.
          * @param {object | null} context - Objeto con {ont, ap, ontBrand, apBrand} o null si es general
          */
-        function showModal(context) {
+        function showGeminiModal(context) {
             // Limpiar estado anterior
             promptInput.value = '';
             responseDiv.textContent = 'Tu guía de configuración aparecerá aquí...';
@@ -796,11 +882,11 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
                 quickOptionsDivider.style.display = 'none';
             }
             
-            modal.style.display = 'block';
+            geminiModal.style.display = 'block';
         }
 
-        function hideModal() {
-            modal.style.display = 'none';
+        function hideGeminiModal() {
+            geminiModal.style.display = 'none';
         }
 
         /**
@@ -809,16 +895,16 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
         function createQuickOptionButtons(ont, ap, ontBrand, apBrand) {
             const options = [
                 {
-                    label: "Guía de Configuración",
-                    prompt: `Dame la guía de configuración paso a paso para la combinación de ONT "${ont}" (marca ${ontBrand}) y Access Point "${ap}" (marca ${apBrand}).`
+                    label: "Validar Compatibilidad Mesh",
+                    prompt: `Valida si la ONT "${ont}" (marca ${ontBrand}) y el Access Point "${ap}" (marca ${apBrand}) son compatibles para una red EasyMesh. Si lo son, dame los pasos clave para activar el mesh.`
                 },
                 {
-                    label: "Problemas Comunes",
-                    prompt: `¿Cuáles son los 3 problemas más comunes al instalar la ONT "${ont}" (marca ${ontBrand}) con el AP "${ap}" (marca ${apBrand}) y cuáles son sus soluciones?`
+                    label: "¿Cómo configuro EasyMesh?",
+                    prompt: `Dame la guía de configuración específica para activar EasyMesh entre la ONT "${ont}" (marca ${ontBrand}) y el AP "${ap}" (marca ${apBrand}). Asume que son compatibles.`
                 },
                 {
-                    label: "Optimizar Red",
-                    prompt: `¿Cómo puedo optimizar la red mesh (EasyMesh) entre la ONT "${ont}" (marca ${ontBrand}) y el AP "${ap}" (marca ${apBrand})?`
+                    label: "Problemas de Sincronización Mesh",
+                    prompt: `Estoy teniendo problemas para que la ONT "${ont}" (marca ${ontBrand}) y el AP "${ap}" (marca ${apBrand}) sincronicen la red EasyMesh. ¿Cuáles son las causas comunes y cómo las soluciono?`
                 }
             ];
 
@@ -847,7 +933,7 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
                 return response;
             } catch (error) {
                 if (retries > 0 && error.message.includes('Failed to fetch')) {
-                    console.warn(`Fetch failed, retrying in ${delay}ms... (${retries} retries left)`);
+                    // No loguear reintentos en consola
                     await new Promise(resolve => setTimeout(resolve, delay));
                     return fetchWithBackoff(url, options, retries - 1, delay * 2);
                 } else {
@@ -908,5 +994,6 @@ Usa formato markdown simple, como guiones (-) o listas numeradas (1., 2., 3.).
 
 </body>
 </html>
+
 
 
