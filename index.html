@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infografía de Equipos Mesh</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carga de la fuente Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -192,7 +191,6 @@
 
     <main class="container mx-auto p-6 sm:p-12">
 
-        <!-- Encabezado -->
         <header class="text-center mb-12">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">
                 Regla de combinación de equipos ONT y APs (Mesh)
@@ -201,33 +199,27 @@
                 Guía de instalación y compatibilidad para equipos Mesh.
             </p>
 
-            <!-- INICIO: Botón del Asistente Gemini -->
             <div class="mt-8">
                 <button id="open-gemini-modal" class="gemini-button bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center mx-auto">
-                    <!-- Icono de chispas -->
                     <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM18 13.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 18l-1.035.259a3.375 3.375 0 00-2.456 2.456L18 21.75l-.259-1.035a3.375 3.375 0 00-2.456-2.456L14.25 18l1.036-.259a3.375 3.375 0 002.455-2.456L18 13.25z" />
                     </svg>
                     ✨ Asistente de Configuración (General)
                 </button>
             </div>
-            <!-- FIN: Botón del Asistente Gemini -->
             <p class="text-gray-500 text-sm mt-8 italic">Selecciona un ONT y un Access Point de cualquier marca para crear una combinación.</p>
         </header>
 
-        <!-- Sección: Wifi-6 -->
         <section class="mb-16">
             <h2 class="text-xl sm:text-2xl font-bold text-white border-b-2 border-blue-500 pb-2 mb-8">Tecnología: Wifi-6</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <!-- Tarjeta: ZTE -->
                 <div class="brand-card" style="box-shadow: 0 0 25px rgba(34, 211, 238, 0.1);">
                     <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">ZTE</h3>
                     <div class="space-y-6">
-                        <!-- Par de combinación -->
+                        
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6221B">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -235,7 +227,6 @@
                                     <p class="text-lg font-mono text-cyan-300">F6221B</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H3101P">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -244,10 +235,10 @@
                                 </div>
                             </div>
                         </div>
+
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
+
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6201B">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -255,7 +246,6 @@
                                     <p class="text-lg font-mono text-cyan-300">F6201B</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H3101P">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -264,16 +254,33 @@
                                 </div>
                             </div>
                         </div>
+
+                        <hr class="border-gray-700">
+
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-800/50 p-2 rounded-lg border border-gray-700/50">
+                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6600P">
+                                <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
+                                <div>
+                                    <span class="text-xs font-bold text-yellow-500 uppercase">ONT (Master)</span>
+                                    <p class="text-lg font-mono text-cyan-300 font-bold">F6600P</p>
+                                </div>
+                            </div>
+                            <div class="selectable-item flex items-center space-x-3 selected-highlight" data-type="ap" data-model="H3601P V9.4">
+                                <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
+                                <div>
+                                    <span class="text-xs font-bold text-yellow-500 uppercase">AP (Perf)</span>
+                                    <p class="text-lg font-mono text-cyan-300 font-bold">H3601P</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- Tarjeta: Huawei -->
                 <div class="brand-card" style="box-shadow: 0 0 25px rgba(34, 211, 238, 0.1);">
                     <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Huawei</h3>
                     <div class="space-y-6">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8245X68">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -281,7 +288,6 @@
                                     <p class="text-lg font-mono text-cyan-300">HG8245X68</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="K562e-10">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -291,9 +297,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145X610">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -301,7 +305,6 @@
                                     <p class="text-lg font-mono text-cyan-300">HG8145X610</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="K562e-10">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -311,9 +314,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145X612">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -321,7 +322,6 @@
                                     <p class="text-lg font-mono text-cyan-300">HG8145X612</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="K562e-10">
                                 <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -333,7 +333,6 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta: Nokia (Vacía para Wifi-6) -->
                 <div class="brand-card border-dashed border-gray-700 bg-gray-800/50">
                     <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Nokia</h3>
                     <div class="flex items-center justify-center h-full">
@@ -344,19 +343,15 @@
             </div>
         </section>
 
-        <!-- Sección: Wifi-5 -->
         <section>
             <h2 class="text-xl sm:text-2xl font-bold text-white border-b-2 border-blue-500 pb-2 mb-8">Tecnología: Wifi-5</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <!-- Tarjeta: ZTE -->
                 <div class="brand-card" style="box-shadow: 0 0 25px rgba(163, 230, 53, 0.1);">
                     <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">ZTE</h3>
                     <div class="space-y-6">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F679W">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -364,7 +359,6 @@
                                     <p class="text-lg font-mono text-lime-300">F679W</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -374,9 +368,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F680V90">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -384,7 +376,6 @@
                                     <p class="text-lg font-mono text-lime-300">F680V90</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -394,9 +385,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F670LV11">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -404,7 +393,6 @@
                                     <p class="text-lg font-mono text-lime-300">F670LV11</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -414,9 +402,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F679LV9">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -424,7 +410,6 @@
                                     <p class="text-lg font-mono text-lime-300">F679LV9</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -436,13 +421,10 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta: Huawei -->
                 <div class="brand-card" style="box-shadow: 0 0 25px rgba(163, 230, 53, 0.1);">
                     <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Huawei</h3>
                     <div class="space-y-6">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145V512">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -450,7 +432,6 @@
                                     <p class="text-lg font-mono text-lime-300">HG8145V512</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="WA8021V5">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -460,9 +441,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8245W5">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -470,7 +449,6 @@
                                     <p class="text-lg font-mono text-lime-300">HG8245W5</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="WA8021V5">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -480,9 +458,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145V5">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -490,7 +466,6 @@
                                     <p class="text-lg font-mono text-lime-300">HG8145V5</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="WA8021V5">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -502,13 +477,10 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta: Nokia -->
                 <div class="brand-card" style="box-shadow: 0 0 25px rgba(163, 230, 53, 0.1);">
                     <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Nokia</h3>
                     <div class="space-y-6">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="G1425G8">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -516,7 +488,6 @@
                                     <p class="text-lg font-mono text-lime-300">G1425G8</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="Beacon 1-1">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -526,9 +497,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="G1425GA">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -536,7 +505,6 @@
                                     <p class="text-lg font-mono text-lime-300">G1425GA</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="Beacon 1-1">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -546,9 +514,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-700">
-                        <!-- Par de combinación -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <!-- ONT Block -->
                             <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="G2425G8">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
                                 <div>
@@ -556,7 +522,6 @@
                                     <p class="text-lg font-mono text-lime-300">G2425G8</p>
                                 </div>
                             </div>
-                            <!-- AP Block -->
                             <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="Beacon 1-1">
                                 <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
                                 <div>
@@ -571,14 +536,12 @@
             </div>
         </section>
 
-        <!-- Pie de página -->
         <footer class="text-center mt-16 text-gray-500 text-sm">
             <p>Información basada en la tabla de compatibilidad proporcionada.</p>
         </footer>
 
     </main>
 
-    <!-- Barra de Selección Flotante -->
     <div id="selection-bar" class="fixed bottom-0 left-0 right-0 w-full bg-gray-800 border-t border-gray-700 p-4 shadow-lg z-50" style="transform: translateY(100%); transition: transform 0.3s ease-out;">
         <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex-1 text-center sm:text-left">
@@ -596,20 +559,15 @@
     </div>
 
 
-    <!-- INICIO: Modal del Asistente Gemini -->
     <div id="gemini-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="close-gemini-modal">&times;</span>
             <h3 id="gemini-modal-title" class="text-2xl font-semibold text-white mb-4 flex items-center">
-                <!-- El título se rellenará con JS -->
-            </h3>
+                </h3>
 
-            <!-- Opciones Rápidas (se rellenará con JS) -->
             <div id="gemini-quick-options" class="flex flex-wrap gap-2 mb-4">
-                <!-- Los botones de opciones rápidas se insertarán aquí -->
-            </div>
+                </div>
 
-            <!-- Separador si hay opciones rápidas -->
             <hr id="gemini-quick-options-divider" class="border-gray-600 mb-4" style="display: none;">
 
             <p class="text-gray-400 mb-4">
@@ -629,9 +587,6 @@
             </div>
         </div>
     </div>
-    <!-- FIN: Modal del Asistente Gemini -->
-    
-    <!-- INICIO: Modal de Contraseña -->
     <div id="password-modal" class="modal">
         <div class="modal-content">
             <h3 class="text-2xl font-semibold text-white mb-4 flex items-center">
@@ -652,10 +607,6 @@
             </button>
         </div>
     </div>
-    <!-- FIN: Modal de Contraseña -->
-
-
-    <!-- INICIO: Lógica del Asistente Gemini -->
     <script type="module">
         // --- Constantes de la API ---
         const apiKey = "AIzaSyAouVfN_En34vqWIUfigq4lx-Fn-ncWHpk";
@@ -990,10 +941,9 @@ Usa formato markdown simple.
             }
         }
     </script>
-    <!-- FIN: Lógica del Asistente Gemini -->
-
-</body>
+    </body>
 </html>
+
 
 
 
