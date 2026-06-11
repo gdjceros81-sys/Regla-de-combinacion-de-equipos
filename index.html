@@ -3,984 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infografía de Equipos Mesh</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <title>Visor Automático de Documentos</title>
     <style>
-        /* Aplicamos la fuente Inter a todo el cuerpo */
         body {
-            font-family: 'Inter', sans-serif;
-            /* Añadimos padding en la parte inferior para que la barra de selección no tape contenido */
-            padding-bottom: 150px; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
         }
 
-        /* Estilo base para las tarjetas de marca */
-        .brand-card {
-            background-color: #1f2937; /* bg-gray-800 */
-            border-radius: 1rem; /* rounded-xl */
-            padding: 1.5rem; /* p-6 */
-            border: 1px solid #374151; /* border-gray-700 */
-            transition: all 0.3s ease;
+        header {
+            text-align: center;
+            margin-bottom: 10px;
         }
 
-        /* Efecto hover sutil para tarjetas */
-        .brand-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
+        h2 { margin: 5px 0; font-size: 20px; color: #007bff; }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            max-height: 30vh;
+            overflow-y: auto;
+            padding: 4px;
         }
 
-        /* --- INICIO: Estilos para Asistente Gemini y Combinaciones --- */
-
-        /* Estilo para los items seleccionables (ONT y AP) */
-        .selectable-item {
-            border: 2px solid transparent;
-            border-radius: 0.75rem; /* rounded-lg */
-            padding: 0.75rem; /* p-3 */
-            margin: -0.75rem; /* Compensar el padding */
-            transition: all 0.2s ease;
+        button {
+            padding: 10px 14px;
+            border: 1px solid #dee2e6;
+            background-color: #ffffff;
+            color: #495057;
+            border-radius: 6px;
+            font-size: 14px;
             cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
         }
 
-        .selectable-item:hover {
-            background-color: #374151; /* bg-gray-700 */
-            border-color: #4b5563; /* border-gray-600 */
+        button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
         }
 
-        /* Estilo para el item SELECCIONADO */
-        .selected-item {
-            border-color: #3b82f6 !important; /* Borde azul brillante */
-            background-color: #1e3a8a; /* Fondo azul oscuro */
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        #pdf-container {
+            flex-grow: 1;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            width: 100%;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #666;
         }
 
-
-        /* Estilo para el botón del asistente con resplandor */
-        .gemini-button {
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 5px rgba(59, 130, 246, 0.3);
-            animation: pulse-glow 2s infinite alternate;
-        }
-        .gemini-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.7), 0 0 10px rgba(59, 130, 246, 0.5);
-        }
-
-        @keyframes pulse-glow {
-            from {
-                box-shadow: 0 0 15px rgba(59, 130, 246, 0.4), 0 0 5px rgba(59, 130, 246, 0.2);
-            }
-            to {
-                box-shadow: 0 0 25px rgba(59, 130, 246, 0.7), 0 0 10px rgba(59, 130, 246, 0.5);
-            }
-        }
-
-        /* Estilos para el Modal */
-        .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
+        iframe {
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+            border: none;
         }
-        .modal-content {
-            position: relative;
-            background-color: #1f2937; /* bg-gray-800 */
-            margin: 10% auto;
-            padding: 2rem;
-            border: 1px solid #374151; /* border-gray-700 */
-            width: 90%;
-            max-width: 600px;
-            border-radius: 1rem; /* rounded-xl */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            animation: slide-in 0.3s ease-out;
-        }
-
-        @keyframes slide-in {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        /* Animación para error de contraseña */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        .animate-shake {
-            animation: shake 0.5s ease-in-out;
-        }
-
-        .modal-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            line-height: 1;
-        }
-        .modal-close:hover,
-        .modal-close:focus {
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Estilo para el área de respuesta y loader */
-        #gemini-response {
-            background-color: #111827; /* bg-gray-900 */
-            border-radius: 0.5rem; /* rounded-lg */
-            padding: 1rem;
-            margin-top: 1rem;
-            min-height: 150px;
-            white-space: pre-wrap; /* Respeta saltos de línea y espacios */
-            overflow-y: auto;
-            max-height: 300px;
-            border: 1px solid #374151;
-            font-family: 'Inter', sans-serif;
-            color: #d1d5db; /* text-gray-300 */
-        }
-
-        /* Loader */
-        .loader {
-            border: 4px solid #374151; /* border-gray-700 */
-            border-top: 4px solid #3b82f6; /* border-blue-500 */
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-            display: none; /* Oculto por defecto */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Estilos para Opciones Rápidas */
-        .quick-option-button {
-            background-color: #374151; /* bg-gray-700 */
-            color: #d1d5db; /* text-gray-300 */
-            border: 1px solid #4b5563; /* border-gray-600 */
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem; /* rounded-lg */
-            font-size: 0.875rem; /* text-sm */
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .quick-option-button:hover {
-            background-color: #4b5563; /* bg-gray-600 */
-            color: #fff;
-        }
-        /* --- FIN: Estilos para el Asistente Gemini --- */
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 leading-relaxed">
+<body>
 
-    <main class="container mx-auto p-6 sm:p-12">
+    <header>
+        <h2>Documentos Disponibles</h2>
+    </header>
 
-        <header class="text-center mb-12">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-                Regla de combinación de equipos ONT y APs (Mesh)
-            </h1>
-            <p class="text-lg md:text-xl text-gray-400 mt-4 max-w-3xl mx-auto">
-                Guía de instalación y compatibilidad para equipos Mesh.
-            </p>
+    <div class="menu" id="menu-documentos">
+        <p style="font-size: 14px;">Buscando documentos en el servidor...</p>
+    </div>
 
-            <div class="mt-8">
-                <button id="open-gemini-modal" class="gemini-button bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center mx-auto">
-                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM18 13.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 18l-1.035.259a3.375 3.375 0 00-2.456 2.456L18 21.75l-.259-1.035a3.375 3.375 0 00-2.456-2.456L14.25 18l1.036-.259a3.375 3.375 0 002.455-2.456L18 13.25z" />
-                    </svg>
-                    ✨ Asistente de Configuración (General)
-                </button>
-            </div>
-            <p class="text-gray-500 text-sm mt-8 italic">Selecciona un ONT y un Access Point de cualquier marca para crear una combinación.</p>
-        </header>
+    <div id="pdf-container"></div>
 
-        <section class="mb-16">
-            <h2 class="text-xl sm:text-2xl font-bold text-white border-b-2 border-blue-500 pb-2 mb-8">Tecnología: Wifi-6</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <script>
+        // --- CONFIGURACIÓN OBLIGATORIA ---
+        // Coloca aquí tu usuario y el nombre exacto de tu repositorio en GitHub
+        const githubUser = "gdjceros81-sys"; 
+        const githubRepo = "Infografias-procedimientos"; 
+        // ---------------------------------
+
+        const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/`;
+        const menuContenedor = document.getElementById('menu-documentos');
+        const pdfContenedor = document.getElementById('pdf-container');
+
+        async function cargarDocumentos() {
+            try {
+                // Consultamos la API de GitHub para obtener los archivos
+                const respuesta = await fetch(apiUrl);
                 
-                <div class="brand-card" style="box-shadow: 0 0 25px rgba(34, 211, 238, 0.1);">
-                    <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">ZTE</h3>
-                    <div class="space-y-6">
-                        
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6221B">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">F6221B</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H3101P">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-cyan-300">H3101P</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="border-gray-700">
-
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6201B">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">F6201B</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H3101P">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-cyan-300">H3101P</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="border-gray-700">
-
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6221B">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">F6221B</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H3601P V9.4">
-                                <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-bold text-yellow-500 uppercase">AP (Perf)</span>
-                                    <p class="text-lg font-mono text-cyan-300 font-bold">H3601P V9.4</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="border-gray-700">
-
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6201B">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">F6201B</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H3601P V9.4">
-                                <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-bold text-yellow-500 uppercase">AP (Perf)</span>
-                                    <p class="text-lg font-mono text-cyan-300 font-bold">H3601P V9.4</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="border-gray-700">
-
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-800/50 p-2 rounded-lg border border-gray-700/50">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F6600P">
-                                <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-bold text-yellow-500 uppercase">ONT (Master)</span>
-                                    <p class="text-lg font-mono text-cyan-300 font-bold">F6600P</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3 selected-highlight" data-type="ap" data-model="H3601P V9.4">
-                                <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-bold text-yellow-500 uppercase">AP (Perf)</span>
-                                    <p class="text-lg font-mono text-cyan-300 font-bold">H3601P V9.4</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="brand-card" style="box-shadow: 0 0 25px rgba(34, 211, 238, 0.1);">
-                    <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Huawei</h3>
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8245X68">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">HG8245X68</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="K562e-10">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-cyan-300">K562e-10</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145X610">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">HG8145X610</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="K562e-10">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-cyan-300">K562e-10</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145X612">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-cyan-300">HG8145X612</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="K562e-10">
-                                <svg class="w-6 h-6 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-cyan-300">K562e-10</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="brand-card border-dashed border-gray-700 bg-gray-800/50">
-                    <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Nokia</h3>
-                    <div class="flex items-center justify-center h-full">
-                        <p class="text-gray-500 italic">Sin datos para Wifi-6</p>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <section>
-            <h2 class="text-xl sm:text-2xl font-bold text-white border-b-2 border-blue-500 pb-2 mb-8">Tecnología: Wifi-5</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                if (!respuesta.ok) {
+                    throw new Error("No se pudo conectar. Verifica que el usuario y repo sean correctos y el repositorio sea público.");
+                }
                 
-                <div class="brand-card" style="box-shadow: 0 0 25px rgba(163, 230, 53, 0.1);">
-                    <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">ZTE</h3>
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F679W">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">F679W</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">H199A</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F680V90">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">F680V90</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">H199A</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F670LV11">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">F670LV11</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">H199A</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="F679LV9">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">F679LV9</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="H199A">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">H199A</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                const archivos = await respuesta.json();
+                
+                // Filtramos solo los archivos que terminan en .pdf
+                const pdfs = archivos.filter(archivo => archivo.name.toLowerCase().endsWith('.pdf'));
 
-                <div class="brand-card" style="box-shadow: 0 0 25px rgba(163, 230, 53, 0.1);">
-                    <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Huawei</h3>
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145V512">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">HG8145V512</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="WA8021V5">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">WA8021V5</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8245W5">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">HG8245W5</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="WA8021V5">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">WA8021V5</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="HG8145V5">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">HG8145V5</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="WA8021V5">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">WA8021V5</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                // Limpiamos el mensaje de "buscando"
+                menuContenedor.innerHTML = '';
 
-                <div class="brand-card" style="box-shadow: 0 0 25px rgba(163, 230, 53, 0.1);">
-                    <h3 class="text-2xl font-semibold text-white mb-6 border-b border-gray-700 pb-3">Nokia</h3>
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="G1425G8">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">G1425G8</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="Beacon 1-1">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">Beacon 1-1</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="G1425GA">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">G1425GA</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="Beacon 1-1">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">Beacon 1-1</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="border-gray-700">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div class="selectable-item flex items-center space-x-3 mb-2 sm:mb-0" data-type="ont" data-model="G2425G8">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 00-.12-1.03l-2.268-9.64a3.375 3.375 0 00-3.285-2.602H7.923a3.375 3.375 0 00-3.285 2.602l-2.268 9.64a4.5 4.5 0 00-.12 1.03v.228m19.5 0a3 3 0 01-3 3H5.25a3 3 0 01-3-3m19.5 0a3 3 0 00-3-3H5.25a3 3 0 00-3 3m16.5 0h.008v.008h-.008v-.008z" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">ONT</span>
-                                    <p class="text-lg font-mono text-lime-300">G2425G8</p>
-                                </div>
-                            </div>
-                            <div class="selectable-item flex items-center space-x-3" data-type="ap" data-model="Beacon 1-1">
-                                <svg class="w-6 h-6 text-lime-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-2.1h7.126a3.375 3.375 0 012.7 2.1l.094.4a4.5 4.5 0 01.9 2.7m-19.5 0h19.5" /></svg>
-                                <div>
-                                    <span class="text-xs font-medium text-gray-400 uppercase">Access Point</span>
-                                    <p class="text-lg font-mono text-lime-300">Beacon 1-1</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                if (pdfs.length === 0) {
+                    menuContenedor.innerHTML = "<p>No hay documentos PDF disponibles.</p>";
+                    return;
+                }
 
-            </div>
-        </section>
+                // Creamos un botón por cada PDF encontrado
+                pdfs.forEach((pdf, index) => {
+                    const boton = document.createElement('button');
+                    
+                    // Usamos el nombre exacto del archivo, pero le quitamos el ".pdf" para que el botón se vea más limpio
+                    let nombreLimpio = pdf.name.replace('.pdf', '').replace(/-/g, ' ').replace(/_/g, ' ');
+                    boton.textContent = nombreLimpio; 
+                    
+                    boton.onclick = () => desplegarPDF(pdf.name, boton);
+                    menuContenedor.appendChild(boton);
 
-        <footer class="text-center mt-16 text-gray-500 text-sm">
-            <p>Información basada en la tabla de compatibilidad proporcionada.</p>
-        </footer>
-
-    </main>
-
-    <div id="selection-bar" class="fixed bottom-0 left-0 right-0 w-full bg-gray-800 border-t border-gray-700 p-4 shadow-lg z-50" style="transform: translateY(100%); transition: transform 0.3s ease-out;">
-        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex-1 text-center sm:text-left">
-                <span class="font-semibold text-white">ONT:</span>
-                <span id="selected-ont-text" class="font-mono text-cyan-300">Ninguno</span>
-            </div>
-            <div class="flex-1 text-center sm:text-left">
-                <span class="font-semibold text-white">AP:</span>
-                <span id="selected-ap-text" class="font-mono text-lime-300">Ninguno</span>
-            </div>
-            <button id="launch-combo-assistant" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg transition-opacity disabled:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                Obtener Ayuda
-            </button>
-        </div>
-    </div>
-
-
-    <div id="gemini-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" id="close-gemini-modal">&times;</span>
-            <h3 id="gemini-modal-title" class="text-2xl font-semibold text-white mb-4 flex items-center">
-                </h3>
-
-            <div id="gemini-quick-options" class="flex flex-wrap gap-2 mb-4">
-                </div>
-
-            <hr id="gemini-quick-options-divider" class="border-gray-600 mb-4" style="display: none;">
-
-            <p class="text-gray-400 mb-4">
-                O escribe tu consulta personalizada:
-            </p>
-
-            <textarea id="gemini-prompt" class="w-full h-24 bg-gray-700 text-gray-200 p-2 rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500" placeholder="Escribe tu consulta aquí..."></textarea>
-            
-            <button id="gemini-submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg mt-4 transition duration-200">
-                Generar Guía
-            </button>
-
-            <div id="gemini-loader" class="loader"></div>
-
-            <div id="gemini-response" class="text-gray-300">
-                Tu guía de configuración aparecerá aquí...
-            </div>
-        </div>
-    </div>
-    <div id="password-modal" class="modal">
-        <div class="modal-content">
-            <h3 class="text-2xl font-semibold text-white mb-4 flex items-center">
-                <svg class="w-6 h-6 mr-2 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-                Acceso Requerido
-            </h3>
-            <p class="text-gray-400 mb-4">
-                Por favor, introduce la contraseña para acceder al asistente.
-            </p>
-            
-            <input type="password" id="password-input" class="w-full bg-gray-700 text-gray-200 p-2 rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500" placeholder="Contraseña...">
-            <p id="password-error" class="text-red-400 text-sm mt-2" style="display: none;">Contraseña incorrecta.</p>
-            
-            <button id="password-submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg mt-4 transition duration-200">
-                Acceder
-            </button>
-        </div>
-    </div>
-    <script type="module">
-        // --- Constantes de la API ---
-        const apiKey = "AIzaSyAsujMhOX8KSV5_gaOiZey3FqPnBjK4pVo";
-        const systemPrompt = `
-Eres un asistente experto en redes y técnico de telecomunicaciones, especializado en equipos ZTE, Huawei y Nokia.
-Tu tarea principal es **validar la compatibilidad para redes EasyMesh** entre diferentes modelos de ONT y Access Point.
-El usuario te hará una consulta sobre una combinación específica.
-Basadote en los modelos y marcas proporcionados, tu primera prioridad es:
-1.  **Confirmar si son compatibles** para EasyMesh.
-2.  Si son compatibles, proporciona una guía de configuración **enfocada en la activación de EasyMesh**.
-3.  Si NO son compatibles para EasyMesh, explícalo claramente y ofrece una alternativa de configuración (por ejemplo, AP en modo bridge o router).
-4.  Si la consulta es sobre problemas, enfócate en problemas de *sincronización Mesh*.
-
-La consulta PUEDE incluir la marca de cada equipo, por ejemplo: "ONT 'ModeloX' (marca ZTE) y AP 'ModeloY' (marca Huawei)".
-PRESTA MUCHA ATENCIÓN a las marcas, ya que las configuraciones inter-marca (cross-brand) son cruciales para la compatibilidad mesh.
-Responde de forma concisa y técnica. No saludes. Ve directo al punto.
-Usa formato markdown simple.
-`;
-       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-        // --- Variables de Estado de Selección ---
-        let selectedOnt = null; // Objeto: { model: '...', brand: '...' }
-        let selectedAp = null; // Objeto: { model: '...', brand: '...' }
-        let currentContext = null; // Almacena el contexto para el modal de contraseña
-
-        // --- Constantes del DOM ---
-        const geminiModal = document.getElementById('gemini-modal');
-        const openModalBtn = document.getElementById('open-gemini-modal');
-        const closeModalBtn = document.getElementById('close-gemini-modal');
-        const submitBtn = document.getElementById('gemini-submit');
-        const promptInput = document.getElementById('gemini-prompt');
-        const responseDiv = document.getElementById('gemini-response');
-        const loader = document.getElementById('gemini-loader');
-        const modalTitle = document.getElementById('gemini-modal-title');
-        const quickOptionsContainer = document.getElementById('gemini-quick-options');
-        const quickOptionsDivider = document.getElementById('gemini-quick-options-divider');
-        
-        // --- DOM de la Barra de Selección ---
-        const selectionBar = document.getElementById('selection-bar');
-        const selectedOntText = document.getElementById('selected-ont-text');
-        const selectedApText = document.getElementById('selected-ap-text');
-        const launchComboBtn = document.getElementById('launch-combo-assistant');
-        const selectableItems = document.querySelectorAll('.selectable-item');
-
-        // --- DOM del Modal de Contraseña ---
-        const passwordModal = document.getElementById('password-modal');
-        const passwordInput = document.getElementById('password-input');
-        const passwordSubmit = document.getElementById('password-submit');
-        const passwordError = document.getElementById('password-error');
-        
-        // --- Contraseña ---
-        const ADMIN_PASSWORD = "config2024"; // Puedes cambiar esta contraseña
-
-        // --- Event Listeners ---
-        
-        // Botón general
-        openModalBtn.addEventListener('click', () => {
-            checkPasswordAndShowModal(null); // 'null' indica que es el asistente general
-        });
-
-        // Items seleccionables (ONTs y APs)
-        selectableItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const type = item.dataset.type;
-                const model = item.dataset.model;
-                // Encontrar la marca subiendo al padre 'brand-card' y buscando el 'h3'
-                const brand = item.closest('.brand-card').querySelector('h3').textContent.trim();
-                const currentSelection = { model, brand };
-
-                // Deseleccionar visualmente todos los del mismo tipo
-                document.querySelectorAll(`.selectable-item[data-type="${type}"]`).forEach(el => {
-                    el.classList.remove('selected-item');
+                    // Desplegamos el primer PDF automáticamente
+                    if (index === 0) {
+                        desplegarPDF(pdf.name, boton);
+                    }
                 });
 
-                if (type === 'ont') {
-                    // Si se hace clic en el ya seleccionado, se deselecciona
-                    if (JSON.stringify(selectedOnt) === JSON.stringify(currentSelection)) {
-                        selectedOnt = null;
-                    } else {
-                        selectedOnt = currentSelection;
-                        item.classList.add('selected-item'); // Seleccionar visualmente
-                    }
-                } else if (type === 'ap') {
-                    // Si se hace clic en el ya seleccionado, se deselecciona
-                    if (JSON.stringify(selectedAp) === JSON.stringify(currentSelection)) {
-                        selectedAp = null;
-                    } else {
-                        selectedAp = currentSelection;
-                        item.classList.add('selected-item'); // Seleccionar visualmente
-                    }
-                }
-                updateSelectionBar();
-            });
-        });
-
-        // Botón de la barra de selección
-        launchComboBtn.addEventListener('click', () => {
-            if (selectedOnt && selectedAp) {
-                const context = {
-                    ont: selectedOnt.model,
-                    ap: selectedAp.model,
-                    ontBrand: selectedOnt.brand,
-                    apBrand: selectedAp.brand
-                };
-                checkPasswordAndShowModal(context);
-            }
-        });
-
-        // --- Listeners de Modales ---
-        closeModalBtn.addEventListener('click', hideGeminiModal);
-        
-        // Listener para cerrar el modal de Gemini si se hace clic fuera
-        window.addEventListener('click', (event) => {
-            if (event.target == geminiModal) {
-                hideGeminiModal();
-            }
-            // Listener para cerrar el modal de Contraseña si se hace clic fuera
-            if (event.target == passwordModal) {
-                hidePasswordModal();
-            }
-        });
-        
-        submitBtn.addEventListener('click', getGeminiResponse);
-
-        // Listeners del Modal de Contraseña
-        passwordSubmit.addEventListener('click', handlePasswordSubmit);
-        passwordInput.addEventListener('keyup', (event) => {
-             // Resetear error al escribir
-            passwordError.style.display = 'none';
-            passwordInput.classList.remove('border-red-500');
-            // Permitir envío con "Enter"
-            if (event.key === 'Enter') {
-                handlePasswordSubmit();
-            }
-        });
-
-        // --- Funciones de la Barra de Selección ---
-        
-        function updateSelectionBar() {
-            // Si no hay nada seleccionado, esconder la barra
-            if (!selectedOnt && !selectedAp) {
-                selectionBar.style.transform = 'translateY(100%)';
-                return;
-            }
-
-            // Mostrar la barra
-            selectionBar.style.transform = 'translateY(0)';
-
-            // Actualizar texto
-            selectedOntText.textContent = selectedOnt ? `${selectedOnt.brand} ${selectedOnt.model}` : 'Ninguno';
-            selectedApText.textContent = selectedAp ? `${selectedAp.brand} ${selectedAp.model}` : 'Ninguno';
-
-            // Habilitar/Deshabilitar el botón de ayuda
-            if (selectedOnt && selectedAp) {
-                launchComboBtn.disabled = false;
-            } else {
-                launchComboBtn.disabled = true;
-            }
-        }
-
-
-        // --- Funciones del Modal ---
-
-        /**
-         * Verifica la contraseña y luego muestra el modal
-         * @param {object | null} context - Objeto con {ont, ap, ontBrand, apBrand} o null si es general
-         */
-        function checkPasswordAndShowModal(context) {
-            currentContext = context; // Almacenar el contexto para usarlo después de la validación
-            passwordInput.value = '';
-            passwordError.style.display = 'none';
-            passwordInput.classList.remove('border-red-500');
-            passwordModal.style.display = 'block';
-            passwordInput.focus();
-        }
-
-        function handlePasswordSubmit() {
-            const enteredPassword = passwordInput.value;
-            
-            if (enteredPassword === ADMIN_PASSWORD) {
-                hidePasswordModal();
-                showGeminiModal(currentContext); // Usar el contexto almacenado
-            } else {
-                passwordError.style.display = 'block';
-                passwordInput.classList.add('border-red-500'); // Marcar el input en rojo
-                // Aplicar animación de "shake"
-                passwordModal.querySelector('.modal-content').classList.add('animate-shake');
-                setTimeout(() => {
-                    passwordModal.querySelector('.modal-content').classList.remove('animate-shake');
-                }, 500);
-            }
-        }
-
-        function hidePasswordModal() {
-            passwordModal.style.display = 'none';
-        }
-
-        /**
-         * Muestra el modal, configurándolo para un contexto general o específico.
-         * @param {object | null} context - Objeto con {ont, ap, ontBrand, apBrand} o null si es general
-         */
-        function showGeminiModal(context) {
-            // Limpiar estado anterior
-            promptInput.value = '';
-            responseDiv.textContent = 'Tu guía de configuración aparecerá aquí...';
-            quickOptionsContainer.innerHTML = '';
-            
-            if (context) {
-                // --- Contexto Específico (clic en fila) ---
-                modalTitle.innerHTML = `
-                    <svg class="w-6 h-6 mr-2 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-1.007 1.11-.921 1.07.16 1.908.997 1.908 2.09 0 .592-.25 1.138-.68 1.54l-1.956 1.85a.97.97 0 00-.32 1.016l1.396 4.887c.21.73.025 1.517-.51 2.016l-1.37 1.368c-.89.89-2.31.89-3.2 0l-1.37-1.368a1.454 1.454 0 01-.51-2.016l1.396-4.887a.97.97 0 00-.32-1.016l-1.956-1.85a1.99 1.99 0 01-.68-1.54c0-1.094.838-1.93 1.908-2.09.55-.086 1.02.379 1.11.921z" /></svg>
-                    Asistente: ${context.ontBrand} ${context.ont} + ${context.apBrand} ${context.ap}
-                `;
-                quickOptionsDivider.style.display = 'block';
-                createQuickOptionButtons(context.ont, context.ap, context.ontBrand, context.apBrand);
-            } else {
-                // --- Contexto General (clic en botón principal) ---
-                modalTitle.innerHTML = `
-                    <svg class="w-6 h-6 mr-2 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM18 13.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 18l-1.035.259a3.375 3.375 0 00-2.456 2.456L18 21.75l-.259-1.035a3.375 3.375 0 00-2.456-2.456L14.25 18l1.036-.259a3.375 3.375 0 002.455-2.456L18 13.25z" />
-                    </svg>
-                    Asistente de Configuración General
-                `;
-                quickOptionsDivider.style.display = 'none';
-            }
-            
-            geminiModal.style.display = 'block';
-        }
-
-        function hideGeminiModal() {
-            geminiModal.style.display = 'none';
-        }
-
-        /**
-         * Crea botones de opciones rápidas para un contexto específico.
-         */
-        function createQuickOptionButtons(ont, ap, ontBrand, apBrand) {
-            const options = [
-                {
-                    label: "Validar Compatibilidad Mesh",
-                    prompt: `Valida si la ONT "${ont}" (marca ${ontBrand}) y el Access Point "${ap}" (marca ${apBrand}) son compatibles para una red EasyMesh. Si lo son, dame los pasos clave para activar el mesh.`
-                },
-                {
-                    label: "¿Cómo configuro EasyMesh?",
-                    prompt: `Dame la guía de configuración específica para activar EasyMesh entre la ONT "${ont}" (marca ${ontBrand}) y el AP "${ap}" (marca ${apBrand}). Asume que son compatibles.`
-                },
-                {
-                    label: "Problemas de Sincronización Mesh",
-                    prompt: `Estoy teniendo problemas para que la ONT "${ont}" (marca ${ontBrand}) y el AP "${ap}" (marca ${apBrand}) sincronicen la red EasyMesh. ¿Cuáles son las causas comunes y cómo las soluciono?`
-                }
-            ];
-
-            options.forEach(option => {
-                const btn = document.createElement('button');
-                btn.textContent = option.label;
-                btn.className = 'quick-option-button';
-                btn.onclick = () => {
-                    promptInput.value = option.prompt; // Poner el prompt en el textarea
-                    getGeminiResponse(); // Llamar a la IA
-                };
-                quickOptionsContainer.appendChild(btn);
-            });
-        }
-
-
-        /**
-         * Función wrapper para fetch con reintentos (exponential backoff)
-         */
-        async function fetchWithBackoff(url, options, retries = 3, delay = 1000) {
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response;
             } catch (error) {
-                if (retries > 0 && error.message.includes('Failed to fetch')) {
-                    // No loguear reintentos en consola
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchWithBackoff(url, options, retries - 1, delay * 2);
-                } else {
-                    throw error;
-                }
+                menuContenedor.innerHTML = `<p style="color:red; font-size:14px;">Error al cargar la lista: ${error.message}</p>`;
+                console.error(error);
             }
         }
 
-
-        /**
-         * Llama a la API de Gemini
-         */
-        async function getGeminiResponse() {
-            const userQuery = promptInput.value;
-            if (!userQuery) {
-                responseDiv.textContent = 'Por favor, introduce una consulta.';
-                return;
-            }
-
-            loader.style.display = 'block';
-            submitBtn.disabled = true;
-            responseDiv.textContent = ''; // Limpiar respuesta anterior
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-            };
-
-            try {
-                const response = await fetchWithBackoff(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                
-                const candidate = result.candidates?.[0];
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    responseDiv.textContent = candidate.content.parts[0].text;
-                } else {
-                    responseDiv.textContent = 'No se pudo obtener una respuesta válida de la IA.';
-                    console.error('Respuesta inesperada de la API:', result);
-                }
-
-            } catch (error) {
-                console.error('Error al llamar a la API de Gemini:', error);
-                responseDiv.textContent = `Error: ${error.message}. Asegúrate de que la URL de la API es correcta y tienes conexión.`;
-            } finally {
-                loader.style.display = 'none';
-                submitBtn.disabled = false;
-            }
+        function desplegarPDF(nombreArchivo, botonPresionado) {
+            const botones = menuContenedor.querySelectorAll('button');
+            botones.forEach(b => b.classList.remove('active'));
+            botonPresionado.classList.add('active');
+            pdfContenedor.innerHTML = `<iframe src="${nombreArchivo}#toolbar=0" title="Visor PDF"></iframe>`;
         }
+
+        // Iniciamos el proceso al cargar la página
+        cargarDocumentos();
     </script>
-    </body>
+
+</body>
 </html>
+
 
 
 
