@@ -3,167 +3,777 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor Automático de Documentos</title>
+    <title>Simulador de Cobertura Wi-Fi Mesh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 10px;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1024px;
+            margin: auto;
+            padding: 2rem;
+        }
+        #canvas {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+        }
+        .info-box {
+            background-color: #e0f2f1;
+            border-left: 4px solid #00796B;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .control-button {
+            background-color: #00796B;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .control-button:hover {
+            background-color: #004d40;
+        }
+        .control-button.active {
+            background-color: #004d40;
+            outline: 2px solid #00796B;
+            outline-offset: 2px;
+        }
+        #draw-walls-button:disabled, #cable-nodes-button:disabled {
+            background-color: #d1d5db;
+            cursor: not-allowed;
+        }
+        .alert-box {
+            background-color: #fca5a5;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: none;
+            margin-bottom: 1rem;
+            border: 1px solid #dc2626;
+        }
+        .alert-box.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        /* Estilos específicos para la sección de chat */
+        #chat-section {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
-            background-color: #f8f9fa;
+            height: 400px;
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        h2 { margin: 5px 0; font-size: 20px; color: #007bff; }
-
-        .menu {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-            max-height: 30vh;
-            overflow-y: auto;
-            padding: 4px;
-        }
-
-        button {
-            padding: 10px 14px;
-            border: 1px solid #dee2e6;
-            background-color: #ffffff;
-            color: #495057;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-        }
-
-        button.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        #pdf-container {
+        #chat-history {
             flex-grow: 1;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            width: 100%;
-            background-color: #fff;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0.5rem;
+        }
+        .chat-message {
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .chat-message.user {
+            background-color: #e0f2f1;
+            align-self: flex-end;
+            text-align: right;
+        }
+        .chat-message.gemini {
+            background-color: #f3f4f6;
+            align-self: flex-start;
+            text-align: left;
+        }
+        #chat-input-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #666;
         }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        #chat-input {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        #chat-send-button {
+            padding: 0.5rem 1rem;
+            background-color: #00796B;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        #chat-loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            background-color: #00796B;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .dot-1 {
+            animation-delay: -0.32s;
+        }
+        .dot-2 {
+            animation-delay: -0.16s;
+        }
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1.0);
+            }
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container flex flex-col items-center space-y-8">
+        <h1 class="text-3xl font-bold text-gray-800">Simulador de Cobertura Wi-Fi Mesh</h1>
+        
+        <div class="w-full flex flex-col md:flex-row md:space-x-8 space-y-4 md:space-y-0">
+            <div class="w-full md:w-2/3 flex flex-col space-y-4">
+                <!-- Alertas dinámicas -->
+                <div id="backhaul-alert" class="alert-box">
+                    <p>La señal inalámbrica entre algunos nodos es muy débil. Se recomienda usar un backhaul cableado para una conexión más estable.</p>
+                    <ul id="backhaul-alert-list" class="mt-2 text-sm font-normal list-disc list-inside"></ul>
+                </div>
+                <div id="backhaul-fixed-alert" class="alert-box success">
+                    <p>¡Problema de enlace inalámbrico corregido! El backhaul cableado ha estabilizado la conexión entre los nodos.</p>
+                </div>
+                <div id="simulator-info" class="info-box mb-4">
+                    <p class="text-sm">
+                        Modo actual: <strong id="current-mode">Colocar Nodos</strong>.
+                        <br>
+                        <span id="simulator-instructions">Haz clic en el plano para colocar los nodos de malla y observar la cobertura.</span>
+                    </p>
+                </div>
+                <canvas id="canvas"></canvas>
+                <div class="mt-4 flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4 justify-between">
+                    <button id="reset-button" class="control-button">Reiniciar Simulador</button>
+                    <button id="draw-walls-button" class="control-button">Dibujar Muros</button>
+                    <button id="cable-nodes-button" class="control-button">Cablear Nodos</button>
+                    <button id="undo-button" class="control-button bg-orange-500 hover:bg-orange-700">Deshacer Último Paso</button>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/3 flex flex-col space-y-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 rounded-full bg-blue-600"></div>
+                    <p class="text-sm">Router Principal</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 rounded-full bg-teal-600"></div>
+                    <p class="text-sm">Nodo Mesh</p>
+                </div>
+                
+                <div class="flex flex-col space-y-2 mt-4">
+                    <p class="text-sm font-semibold">Material del Muro:</p>
+                    <select id="wall-material-select" class="p-2 rounded-md border border-gray-300">
+                        <option value="drywall" data-attenuation="0.8">Pladur</option>
+                        <option value="brick" data-attenuation="0.6">Ladrillo</option>
+                        <option value="concrete" data-attenuation="0.4">Hormigón</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 rounded-md bg-zinc-400" id="wall-color-drywall"></div>
+                    <p class="text-sm">Muro (Pladur)</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 rounded-md bg-orange-600" id="wall-color-brick"></div>
+                    <p class="text-sm">Muro (Ladrillo)</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 rounded-md bg-gray-700" id="wall-color-concrete"></div>
+                    <p class="text-sm">Muro (Hormigón)</p>
+                </div>
 
-    <header>
-        <h2>Documentos Disponibles</h2>
-    </header>
+                <div class="flex items-center space-x-2 mt-4">
+                    <div class="w-4 h-1 bg-green-500"></div>
+                    <p class="text-sm">Cableado (Backhaul)</p>
+                </div>
 
-    <div class="menu" id="menu-documentos">
-        <p style="font-size: 14px;">Buscando documentos en el servidor...</p>
+                <div class="flex flex-col space-y-2 mt-4">
+                    <p class="text-sm font-semibold">Escala del Plano:</p>
+                    <div class="flex items-center space-x-2">
+                        <input id="meter-scale-input" type="number" value="15" min="1" class="p-2 rounded-md border border-gray-300 w-20 text-center">
+                        <p>metros</p>
+                    </div>
+                    <p class="text-xs text-gray-500">Ancho del plano en metros.</p>
+                </div>
+
+                <div class="flex flex-col space-y-2 mt-4">
+                    <p class="text-sm font-semibold">Leyenda de Señal:</p>
+                    <div class="h-6 w-full rounded-md" style="background: linear-gradient(to right, #ef4444, #f59e0b, #22c55e);"></div>
+                    <div class="flex justify-between text-xs">
+                        <span>Débil</span>
+                        <span>Fuerte</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de preguntas frecuentes -->
+        <div id="faq-section" class="w-full mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-green-700 pb-2">Preguntas Frecuentes (FAQ)</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Puedes hacer preguntas sobre Wi-Fi Mesh y configuraciones de red.
+            </p>
+            <div id="chat-section" class="flex flex-col space-y-4">
+                <div id="chat-history" class="h-64 overflow-y-auto p-4 bg-gray-100 rounded-md">
+                    <div class="chat-message gemini">
+                        Hola, soy tu asistente virtual de Wi-Fi Mesh. ¿Qué pregunta tienes sobre la configuración de redes o la simulación?
+                    </div>
+                </div>
+                <div id="chat-loading" class="flex justify-center items-center">
+                    <div class="dot dot-1"></div>
+                    <div class="dot dot-2"></div>
+                    <div class="dot dot-3"></div>
+                </div>
+                <div id="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." class="p-2 flex-grow border rounded-md">
+                    <button id="chat-send-button" class="control-button ml-2">Enviar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="pdf-container"></div>
-
     <script>
-        // --- CONFIGURACIÓN OBLIGATORIA ---
-        // Coloca aquí tu usuario y el nombre exacto de tu repositorio en GitHub
-        const githubUser = "gdjceros81-sys"; 
-        const githubRepo = "Procedimiento-General-de-Atencion-a-Quejas"; 
-        // ---------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const resetButton = document.getElementById('reset-button');
+            const drawWallsButton = document.getElementById('draw-walls-button');
+            const cableNodesButton = document.getElementById('cable-nodes-button');
+            const undoButton = document.getElementById('undo-button');
+            const currentModeText = document.getElementById('current-mode');
+            const backhaulAlert = document.getElementById('backhaul-alert');
+            const backhaulFixedAlert = document.getElementById('backhaul-fixed-alert');
+            const backhaulAlertList = document.getElementById('backhaul-alert-list');
+            const wallMaterialSelect = document.getElementById('wall-material-select');
+            const meterScaleInput = document.getElementById('meter-scale-input');
+            const chatHistory = document.getElementById('chat-history');
+            const chatInput = document.getElementById('chat-input');
+            const chatSendButton = document.getElementById('chat-send-button');
+            const chatLoading = document.getElementById('chat-loading');
 
-        const apiUrl = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/`;
-        const menuContenedor = document.getElementById('menu-documentos');
-        const pdfContenedor = document.getElementById('pdf-container');
+            let nodes = [];
+            let walls = [];
+            let cables = [];
+            let history = []; 
+            let isMainRouterPlaced = false;
+            let drawingWalls = false;
+            let cablingNodes = false;
+            let isDrawing = false;
+            let startPoint = null;
+            let cablingFromNodeIndex = null;
+            let wallMaterial = 'drywall';
+            let meterScale = 15;
 
-        async function cargarDocumentos() {
-            try {
-                // Consultamos la API de GitHub para obtener los archivos
-                const respuesta = await fetch(apiUrl);
-                
-                if (!respuesta.ok) {
-                    throw new Error("No se pudo conectar. Verifica que el usuario y repo sean correctos y el repositorio sea público.");
+            const materialAttenuation = {
+                drywall: 0.8,
+                brick: 0.6,
+                concrete: 0.4
+            };
+            const wallColors = {
+                drywall: '#a3a3a3', 
+                brick: '#A52A2A',   
+                concrete: '#374151'
+            };
+            
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = (rect.width / 16) * 9;
+
+            function saveState() {
+                history.push({
+                    nodes: JSON.parse(JSON.stringify(nodes)),
+                    walls: JSON.parse(JSON.stringify(walls)),
+                    cables: JSON.parse(JSON.stringify(cables)),
+                    isMainRouterPlaced: isMainRouterPlaced
+                });
+            }
+
+            function undo() {
+                if (history.length > 0) {
+                    const prevState = history.pop();
+                    nodes = prevState.nodes;
+                    walls = prevState.walls;
+                    cables = prevState.cables;
+                    isMainRouterPlaced = prevState.isMainRouterPlaced;
+                    draw();
                 }
-                
-                const archivos = await respuesta.json();
-                
-                // Filtramos solo los archivos que terminan en .pdf
-                const pdfs = archivos.filter(archivo => archivo.name.toLowerCase().endsWith('.pdf'));
+            }
 
-                // Limpiamos el mensaje de "buscando"
-                menuContenedor.innerHTML = '';
+            function getMousePos(canvas, event) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: event.clientX - rect.left,
+                    y: event.clientY - rect.top
+                };
+            }
 
-                if (pdfs.length === 0) {
-                    menuContenedor.innerHTML = "<p>No hay documentos PDF disponibles.</p>";
+            function isClickOnNode(pos) {
+                for (let i = 0; i < nodes.length; i++) {
+                    const node = nodes[i];
+                    const distance = Math.sqrt(Math.pow(pos.x - node.x, 2) + Math.pow(pos.y - node.y, 2));
+                    if (distance <= 15) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            function doLinesIntersect(p1, p2, p3, p4) {
+                const det = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
+                if (det === 0) return false;
+                const lambda = ((p4.y - p3.y) * (p3.x - p1.x) + (p4.x - p3.x) * (p1.y - p3.y)) / det;
+                const gamma = ((p1.y - p2.y) * (p3.x - p1.x) + (p2.x - p1.x) * (p1.y - p3.y)) / det;
+                return (lambda > 0 && lambda < 1) && (gamma > 0 && gamma < 1);
+            }
+
+            function drawScale() {
+                if (canvas.width === 0 || canvas.height === 0) return;
+                const padding = 20;
+                const scaleInMeters = meterScale;
+                const metersPerPixel = scaleInMeters / canvas.width;
+                const heightInMeters = canvas.height * metersPerPixel;
+
+                ctx.font = '14px Inter';
+                ctx.fillStyle = '#333';
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+
+                ctx.beginPath();
+                ctx.moveTo(0, padding);
+                ctx.lineTo(canvas.width, padding);
+                ctx.stroke();
+                
+                const horizontalTicks = 5;
+                for (let i = 0; i <= horizontalTicks; i++) {
+                    const x = (i / horizontalTicks) * canvas.width;
+                    ctx.moveTo(x, padding - 5);
+                    ctx.lineTo(x, padding);
+                    const label = (i / horizontalTicks * scaleInMeters).toFixed(1);
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${label} m`, x, padding - 8);
+                }
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.moveTo(padding, 0);
+                ctx.lineTo(padding, canvas.height);
+                ctx.stroke();
+
+                const verticalTicks = 5;
+                for (let i = 0; i <= verticalTicks; i++) {
+                    const y = (i / verticalTicks) * canvas.height;
+                    ctx.moveTo(padding, y);
+                    ctx.lineTo(padding + 5, y);
+                    const label = (i / verticalTicks * heightInMeters).toFixed(1);
+                    ctx.save();
+                    ctx.translate(padding + 8, y);
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(`${label} m`, 0, 0);
+                    ctx.restore();
+                }
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            function draw() {
+                if (canvas.width === 0 || canvas.height === 0) {
                     return;
                 }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let needsCableAlert = false;
+                let isFixedByCable = false;
+                let alertMessages = [];
+                
+                if (nodes.length > 0) {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
 
-                // Creamos un botón por cada PDF encontrado
-                pdfs.forEach((pdf, index) => {
-                    const boton = document.createElement('button');
-                    
-                    // Usamos el nombre exacto del archivo, pero le quitamos el ".pdf" para que el botón se vea más limpio
-                    let nombreLimpio = pdf.name.replace('.pdf', '').replace(/-/g, ' ').replace(/_/g, ' ');
-                    boton.textContent = nombreLimpio; 
-                    
-                    boton.onclick = () => desplegarPDF(pdf.name, boton);
-                    menuContenedor.appendChild(boton);
+                    for (let y = 0; y < canvas.height; y++) {
+                        for (let x = 0; x < canvas.width; x++) {
+                            let maxSignal = 0;
+                            nodes.forEach(node => {
+                                const distance = Math.sqrt(Math.pow(x - node.x, 2) + Math.pow(y - node.y, 2));
+                                let signal = Math.max(0, 1 - (distance / (Math.min(canvas.width, canvas.height) * 0.4)));
 
-                    // Desplegamos el primer PDF automáticamente
-                    if (index === 0) {
-                        desplegarPDF(pdf.name, boton);
+                                const lineToPixel = { x1: node.x, y1: node.y, x2: x, y2: y };
+                                let wallAttenuationFactor = 1;
+                                walls.forEach(wall => {
+                                    if (doLinesIntersect({x: lineToPixel.x1, y: lineToPixel.y1}, {x: lineToPixel.x2, y: lineToPixel.y2}, {x: wall.x1, y: wall.y1}, {x: wall.x2, y: wall.y2})) {
+                                        wallAttenuationFactor *= materialAttenuation[wall.material];
+                                    }
+                                });
+                                signal *= wallAttenuationFactor;
+
+                                if (signal > maxSignal) {
+                                    maxSignal = signal;
+                                }
+                            });
+
+                            const offset = (y * canvas.width + x) * 4;
+                            let r = 0, g = 0, b = 0;
+                            if (maxSignal > 0.5) { 
+                                g = 255;
+                                r = Math.floor(255 * (1 - maxSignal));
+                            } else { 
+                                r = 255;
+                                g = Math.floor(255 * maxSignal);
+                            }
+
+                            data[offset] = r;
+                            data[offset + 1] = g;
+                            data[offset + 2] = b;
+                            data[offset + 3] = Math.floor(255 * (maxSignal * 0.4));
+                        }
                     }
+                    ctx.putImageData(imageData, 0, 0);
+
+                    if (nodes.length > 1) {
+                        for (let i = 0; i < nodes.length; i++) {
+                            for (let j = i + 1; j < nodes.length; j++) {
+                                const cableExists = cables.some(c => (c.node1 === i && c.node2 === j) || (c.node1 === j && c.node2 === i));
+                                const node1 = nodes[i];
+                                const node2 = nodes[j];
+                                const distance = Math.sqrt(Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2));
+                                const distanceInMeters = (distance / canvas.width) * meterScale;
+                                const maxWirelessDistance = meterScale * 0.4;
+                                let signalBetweenNodes = Math.max(0, 1 - (distance / (Math.min(canvas.width, canvas.height) * 0.4)));
+                                const lineToLine = { x1: node1.x, y1: node1.y, x2: node2.x, y2: node2.y };
+                                let wallAttenuationFactor = 1;
+                                let wallsInPath = [];
+                                walls.forEach(wall => {
+                                    if (doLinesIntersect({x: lineToLine.x1, y: lineToLine.y1}, {x: lineToLine.x2, y: lineToLine.y2}, {x: wall.x1, y: wall.y1}, {x: wall.x2, y: wall.y2})) {
+                                        wallAttenuationFactor *= materialAttenuation[wall.material];
+                                        wallsInPath.push(wall.material);
+                                    }
+                                });
+                                signalBetweenNodes *= wallAttenuationFactor;
+                                
+                                if (signalBetweenNodes < 0.2) { 
+                                    if (!cableExists) {
+                                        needsCableAlert = true;
+                                        let reason = '';
+                                        if (distanceInMeters > maxWirelessDistance) {
+                                            reason = `distancia (${distanceInMeters.toFixed(1)}m)`;
+                                        } else if (wallsInPath.length > 0) {
+                                            reason = `muros de ${wallsInPath.join(', ')}`;
+                                        }
+                                        alertMessages.push(`Enlace entre el nodo ${i + 1} y el nodo ${j + 1} es débil debido a la ${reason}.`);
+                                    } else {
+                                        isFixedByCable = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                backhaulAlert.style.display = needsCableAlert ? 'block' : 'none';
+                backhaulFixedAlert.style.display = (isFixedByCable && !needsCableAlert) ? 'block' : 'none';
+                backhaulAlertList.innerHTML = '';
+                if(alertMessages.length > 0) {
+                    alertMessages.forEach(msg => {
+                        const li = document.createElement('li');
+                        li.textContent = msg;
+                        backhaulAlertList.appendChild(li);
+                    });
+                }
+
+
+                walls.forEach(wall => {
+                    ctx.beginPath();
+                    ctx.moveTo(wall.x1, wall.y1);
+                    ctx.lineTo(wall.x2, wall.y2);
+                    ctx.strokeStyle = wallColors[wall.material]; 
+                    ctx.lineWidth = 8;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                    ctx.closePath();
+                });
+                
+                cables.forEach(cable => {
+                    const node1 = nodes[cable.node1];
+                    const node2 = nodes[cable.node2];
+                    ctx.beginPath();
+                    ctx.moveTo(node1.x, node1.y);
+                    ctx.lineTo(node2.x, node2.y);
+                    ctx.strokeStyle = '#10B981'; 
+                    ctx.lineWidth = 4;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                    ctx.closePath();
                 });
 
-            } catch (error) {
-                menuContenedor.innerHTML = `<p style="color:red; font-size:14px;">Error al cargar la lista: ${error.message}</p>`;
-                console.error(error);
+                nodes.forEach((node, index) => {
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, 15, 0, 2 * Math.PI);
+                    if (index === 0) {
+                        ctx.fillStyle = '#2563eb'; 
+                    } else {
+                        ctx.fillStyle = '#0f766e'; 
+                    }
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    ctx.shadowBlur = 5;
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.font = '12px Inter';
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(index + 1, node.x, node.y);
+                });
+
+                drawScale();
             }
-        }
 
-        function desplegarPDF(nombreArchivo, botonPresionado) {
-            const botones = menuContenedor.querySelectorAll('button');
-            botones.forEach(b => b.classList.remove('active'));
-            botonPresionado.classList.add('active');
-            pdfContenedor.innerHTML = `<iframe src="${nombreArchivo}#toolbar=0" title="Visor PDF"></iframe>`;
-        }
+            // --- LÓGICA DEL CHAT LLM ---
+            const chatHistoryContent = [
+                { role: "assistant", text: "Hola, soy tu asistente virtual de Wi-Fi Mesh. ¿Qué pregunta tienes sobre la configuración de redes o la simulación?" }
+            ];
 
-        // Iniciamos el proceso al cargar la página
-        cargarDocumentos();
+            function addMessage(role, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('chat-message', role);
+                messageDiv.textContent = text;
+                chatHistory.appendChild(messageDiv);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+
+            async function sendPromptToGemini(prompt) {
+                chatLoading.style.display = 'flex';
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                const apiKey = "AIzaSyAouVfN_En34vqWIUfigq4lx-Fn-ncWHpk";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        addMessage('gemini', text);
+                    } else {
+                        addMessage('gemini', 'Lo siento, no pude obtener una respuesta en este momento. Inténtalo de nuevo más tarde.');
+                    }
+                } catch (error) {
+                    addMessage('gemini', `Lo siento, ocurrió un error: ${error.message}`);
+                } finally {
+                    chatLoading.style.display = 'none';
+                }
+            }
+
+            chatSendButton.addEventListener('click', () => {
+                const prompt = chatInput.value.trim();
+                if (prompt) {
+                    addMessage('user', prompt);
+                    sendPromptToGemini(prompt);
+                    chatInput.value = '';
+                }
+            });
+
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    chatSendButton.click();
+                }
+            });
+            // --- FIN DE LA LÓGICA DEL CHAT LLM ---
+
+            // Controles del simulador
+            resetButton.addEventListener('click', () => {
+                nodes = [];
+                walls = [];
+                cables = [];
+                history = [];
+                isMainRouterPlaced = false;
+                drawingWalls = false;
+                cablingNodes = false;
+                isDrawing = false;
+                cablingFromNodeIndex = null;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                draw();
+                drawWallsButton.classList.remove('active');
+                cableNodesButton.classList.remove('active');
+                backhaulAlert.style.display = 'none';
+                backhaulFixedAlert.style.display = 'none';
+                currentModeText.textContent = 'Colocar Nodos';
+                canvas.style.cursor = 'crosshair';
+                wallMaterialSelect.value = 'drywall';
+                meterScaleInput.value = 15;
+            });
+            
+            undoButton.addEventListener('click', () => {
+                undo();
+            });
+
+            drawWallsButton.addEventListener('click', () => {
+                cablingNodes = false;
+                cableNodesButton.classList.remove('active');
+                cablingFromNodeIndex = null;
+                drawingWalls = !drawingWalls;
+                if (drawingWalls) {
+                    drawWallsButton.classList.add('active');
+                    canvas.style.cursor = 'grab';
+                    currentModeText.textContent = 'Dibujar Muros';
+                } else {
+                    drawWallsButton.classList.remove('active');
+                    canvas.style.cursor = 'crosshair';
+                    currentModeText.textContent = 'Colocar Nodos';
+                }
+            });
+            
+            cableNodesButton.addEventListener('click', () => {
+                drawingWalls = false;
+                drawWallsButton.classList.remove('active');
+                cablingNodes = !cablingNodes;
+                if (cablingNodes) {
+                    cableNodesButton.classList.add('active');
+                    canvas.style.cursor = 'pointer';
+                    currentModeText.textContent = 'Cablear Nodos';
+                } else {
+                    cableNodesButton.classList.remove('active');
+                    canvas.style.cursor = 'crosshair';
+                    currentModeText.textContent = 'Colocar Nodos';
+                }
+                cablingFromNodeIndex = null;
+            });
+            
+            wallMaterialSelect.addEventListener('change', (e) => {
+                wallMaterial = e.target.value;
+            });
+
+            meterScaleInput.addEventListener('change', (e) => {
+                const newScale = parseInt(e.target.value, 10);
+                if (!isNaN(newScale) && newScale > 0) {
+                    meterScale = newScale;
+                    draw();
+                }
+            });
+
+            // Manejadores de eventos del mouse para el canvas
+            canvas.addEventListener('mousedown', (event) => {
+                if (drawingWalls) {
+                    saveState();
+                    isDrawing = true;
+                    startPoint = getMousePos(canvas, event);
+                }
+            });
+
+            canvas.addEventListener('mousemove', (event) => {
+                if (!isDrawing) return;
+                const currentPos = getMousePos(canvas, event);
+                draw();
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(currentPos.x, currentPos.y);
+                ctx.strokeStyle = wallColors[wallMaterial];
+                ctx.lineWidth = 8;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+                ctx.closePath();
+            });
+
+            canvas.addEventListener('mouseup', (event) => {
+                if (isDrawing) {
+                    isDrawing = false;
+                    const endPoint = getMousePos(canvas, event);
+                    if (startPoint.x !== endPoint.x || startPoint.y !== endPoint.y) {
+                        walls.push({ x1: startPoint.x, y1: startPoint.y, x2: endPoint.x, y2: endPoint.y, material: wallMaterial });
+                    } else {
+                        history.pop();
+                    }
+                    startPoint = null;
+                    draw();
+                }
+            });
+
+            canvas.addEventListener('click', (event) => {
+                const pos = getMousePos(canvas, event);
+                if (cablingNodes) {
+                    const nodeIndex = isClickOnNode(pos);
+                    if (nodeIndex !== -1) {
+                        if (cablingFromNodeIndex === null) {
+                            cablingFromNodeIndex = nodeIndex;
+                        } else {
+                            if (cablingFromNodeIndex !== nodeIndex) {
+                                const cableExists = cables.some(c => 
+                                    (c.node1 === cablingFromNodeIndex && c.node2 === nodeIndex) || 
+                                    (c.node1 === nodeIndex && c.node2 === cablingFromNodeIndex)
+                                );
+                                if (!cableExists) {
+                                    saveState();
+                                    cables.push({ node1: cablingFromNodeIndex, node2: nodeIndex });
+                                }
+                            }
+                            cablingFromNodeIndex = null;
+                            cablingNodes = false;
+                            cableNodesButton.classList.remove('active');
+                            currentModeText.textContent = 'Colocar Nodos';
+                            canvas.style.cursor = 'crosshair';
+                            draw();
+                        }
+                    }
+                } else if (!drawingWalls) {
+                    if (!isMainRouterPlaced) {
+                        saveState();
+                        nodes.push({ x: pos.x, y: pos.y, type: 'main' });
+                        isMainRouterPlaced = true;
+                        draw();
+                    } else {
+                        if (isClickOnNode(pos) === -1) {
+                            saveState();
+                            nodes.push({ x: pos.x, y: pos.y, type: 'mesh' });
+                            draw();
+                        }
+                    }
+                }
+            });
+
+            // Redimensionar el canvas al cargar y al cambiar el tamaño de la ventana
+            window.addEventListener('resize', () => {
+                 const rect = canvas.parentElement.getBoundingClientRect();
+                 canvas.width = rect.width;
+                 canvas.height = (rect.width / 16) * 9;
+                 draw();
+            });
+            
+            draw();
+            canvas.style.cursor = 'crosshair';
+        });
     </script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
